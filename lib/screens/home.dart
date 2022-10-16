@@ -1,6 +1,10 @@
+import 'package:event_manage/graphql/event.dart';
+import 'package:event_manage/models/event.dart';
 import 'package:event_manage/screens/components/event_card.dart';
 import 'package:event_manage/screens/components/evet_list.dart';
+import 'package:event_manage/screens/components/past_events.dart';
 import 'package:flutter/material.dart';
+import 'package:graphql_flutter/graphql_flutter.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -17,7 +21,7 @@ class _HomeState extends State<Home> {
       child: EventList()
     ),
     const Expanded(
-        child: EventList()
+        child: PastEventList()
     ),
   ];
 
@@ -45,14 +49,14 @@ class _HomeState extends State<Home> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Welcome back,',style: Theme.of(context).textTheme.subtitle1,),
-                        Text('Samadhi Wathsala,',style: Theme.of(context).textTheme.headline6,overflow: TextOverflow.ellipsis,)
+                        Text('To event manage,',style: Theme.of(context).textTheme.headline6,overflow: TextOverflow.ellipsis,)
                       ],
                     ),
                   ),
                   CircleAvatar(
                     radius: size.width/18,
                     backgroundColor: Colors.grey.shade50,
-                    child: Icon(Icons.notifications_active,color: Colors.blue.shade800,),
+                    child: Icon(Icons.notifications_active_outlined,color: Colors.blue.shade800,),
                     // backgroundImage: const AssetImage('assets/images/profile.jpg'),
                   )
                 ],
@@ -64,13 +68,48 @@ class _HomeState extends State<Home> {
             ),
             SizedBox(
               height: size.height/3.5,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                  itemCount: 5,
-                  itemBuilder: (context,index){
-                    return const EventCard();
+              // child: ListView.builder(
+              //   scrollDirection: Axis.horizontal,
+              //     itemCount: 5,
+              //     itemBuilder: (context,index){
+              //       return const EventCard();
+              //     }
+              // ),
+              child: Query(
+                  options: QueryOptions(
+                      document: gql(readEvents),
+                  ),
+                  builder: (QueryResult result, { VoidCallback? refetch, FetchMore? fetchMore } ){
+                    if (result.hasException) {
+                      return Text(result.exception.toString());
+                    }
+
+                    if (result.isLoading) {
+                      return const Text('Loading');
+                    }
+
+                    print(result.data);
+                    List? events = result.data?['event'];
+                    if(events == null){
+                      return Text('No events happen today');
+                    }
+
+                    print(events[1]['title']);
+
+                    return ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                            itemCount: events.length,
+                            itemBuilder: (context,index){
+                            Event singleEvent = Event.fromMap(events[index]);
+                              return EventCard(singleEvent: singleEvent,);
+                            }
+                        );
                   }
               ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(left: size.width/20,top: size.height/30),
+              child: Text( _selectedIndex == 0 ? 'Up coming events': 'Past events',style: Theme.of(context).textTheme.subtitle1!.copyWith(fontWeight: FontWeight.w500),),
             ),
             _widgetOptions.elementAt(_selectedIndex)
 
@@ -92,12 +131,15 @@ class _HomeState extends State<Home> {
         selectedItemColor: Colors.blue.shade800,
         onTap: _onItemTapped,
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: (){},
-          child: const Icon(Icons.add),
-        backgroundColor: Colors.blue.shade800,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+
+      /// set floating action button to add new event (Admin only)
+
+      // floatingActionButton: FloatingActionButton(
+      //     onPressed: (){},
+      //     child: const Icon(Icons.add),
+      //   backgroundColor: Colors.blue.shade800,
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
     );
   }
 }

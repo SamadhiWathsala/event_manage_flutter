@@ -1,7 +1,9 @@
+import 'package:event_manage/models/event.dart';
 import 'package:flutter/material.dart';
 
 class EventCard extends StatelessWidget {
-  const EventCard({Key? key}) : super(key: key);
+  final Event singleEvent;
+  const EventCard({Key? key,required this.singleEvent}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -10,8 +12,8 @@ class EventCard extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Container(
         decoration: BoxDecoration(
-            image: const DecorationImage(
-                image: AssetImage('assets/images/banner.png'),
+            image: DecorationImage(
+                image: AssetImage(singleEvent.bannerImage),
                 fit: BoxFit.fill
             ),
             color: Colors.white,
@@ -45,7 +47,7 @@ class EventCard extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Event name here',style: Theme.of(context).textTheme.subtitle2,),
+                        Text(singleEvent.title,style: Theme.of(context).textTheme.subtitle2,),
                         const CircleAvatar(radius: 5,backgroundColor: Colors.green,),
                       ],
                     ),

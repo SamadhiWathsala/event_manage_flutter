@@ -68,13 +68,6 @@ class _HomeState extends State<Home> {
             ),
             SizedBox(
               height: size.height/3.5,
-              // child: ListView.builder(
-              //   scrollDirection: Axis.horizontal,
-              //     itemCount: 5,
-              //     itemBuilder: (context,index){
-              //       return const EventCard();
-              //     }
-              // ),
               child: Query(
                   options: QueryOptions(
                       document: gql(readEvents),
@@ -91,10 +84,11 @@ class _HomeState extends State<Home> {
                     print(result.data);
                     List? events = result.data?['event'];
                     if(events == null){
-                      return Text('No events happen today');
+                      return const Text('No events happen today');
                     }
 
-                    print(events[1]['title']);
+                    // This event list can be use for build today events list
+                    List? todayEvent = events.where((element) => DateTime.tryParse(element['time']) == DateTime.now().day).toList();
 
                     return ListView.builder(
                           scrollDirection: Axis.horizontal,
@@ -132,8 +126,7 @@ class _HomeState extends State<Home> {
         onTap: _onItemTapped,
       ),
 
-      /// set floating action button to add new event (Admin only)
-
+      /// TODO : set floating action button to add new event (Admin only)
       // floatingActionButton: FloatingActionButton(
       //     onPressed: (){},
       //     child: const Icon(Icons.add),

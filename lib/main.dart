@@ -7,6 +7,7 @@ void main() async{
   await initHiveForFlutter();
 
   final HttpLink httpLink = HttpLink(
+    // replace your graphql backend URL here
     'https://cdc3-103-247-51-243.in.ngrok.io/graphql',
   );
 
@@ -34,25 +35,5 @@ void main() async{
 }
 
 
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   // This widget is the root of your application.
-//   @override
-//   Widget build(BuildContext context) {
-//
-//     return GraphQLProvider(
-//       client: client,
-//       child: MaterialApp(
-//         debugShowCheckedModeBanner: false,
-//         title: 'Event Manage',
-//         theme: ThemeData(
-//           primarySwatch: Colors.blue,
-//         ),
-//         home: const Home(),
-//       ),
-//     );
-//   }
-// }
 
 
